@@ -4,19 +4,15 @@ import (
 	"fmt"
 
 	"github.com/edickens09/sharedClipboard/commands"
-	"go.yaml.in/yaml/v4"
+//	"go.yaml.in/yaml/v4"
 )
 
 type Config struct {
 	server string
 }
 
-func ConfigParse() {
-
-}
-
 func main() {
-	copied := "Hard coded text"
+	copied := "Hard coded text\n"
 
 	commands.Copy(copied)
 	

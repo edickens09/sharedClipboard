@@ -1,3 +1,4 @@
+// Package commands handle commands for copy paste functions
 package commands
 
 import (
@@ -25,4 +26,6 @@ func Paste() (text string) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
+	return text
 }
