@@ -5,6 +5,7 @@ import (
 	"os"
         "io"
         "encoding/csv"
+        "strconv"
 
         "github.com/edickens09/sharedClipboard/commands"
 )
@@ -14,6 +15,8 @@ type ClipboardContent struct {
     content string
     version int64
 }
+
+var cbContent ClipboardContent
 
 func CreateClipboard() error {
     file, err := os.OpenFile("clipboard.dat", os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644,)
@@ -37,6 +40,25 @@ func CopyToClipboard() error {
     defer file.Close()
     
     copiedText := commands.Paste()
+    
+    reader := csv.NewReader(file)
+
+    content, err := reader.Read()
+    if err != nil {
+        if err == io.EOF {
+
+        } else {
+            return err
+        }
+    }
+
+    if copiedText != content[0] {
+        writer := csv.NewWriter(file)
+        //ToDo creating the list of strings to be written file
+        if err = writer.Write(csvContent); err != nil {
+            return err
+        }
+    }
 /*
     if copiedText != content from csv {
         then write to file
@@ -50,8 +72,6 @@ func CopyToClipboard() error {
 }
 
 func CopyFromClipboard( text string) error {
-    
-    var cbContent ClipboardContent
 
     file, err := os.Open("clipboard.dat")
     if err != nil {
@@ -72,8 +92,12 @@ func CopyFromClipboard( text string) error {
     }
 
     cbContent.content = content[0]
-    //leaving this asis for now, I would like version to remain an int but csv needs to be string?
-    cbContent.version = content[1]
+    cbContent.version, err = strconv.ParseInt(content[1], 10, 64)
+    if err != nil {
+        return err
+    }
+
+    commands.Copy(cbContent.content)
     
     return nil
 }
