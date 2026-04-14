@@ -9,6 +9,7 @@ import (
 
 type Config struct {
 	server string
+        port string
 }
 
 func main() {

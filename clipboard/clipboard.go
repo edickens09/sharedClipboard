@@ -31,6 +31,7 @@ func CreateClipboard() error {
 
 func CopyToClipboard() error {
 
+    var csvContent []string
 
     file, err := os.Open("clipboard.dat")
     if err != nil {
@@ -54,10 +55,17 @@ func CopyToClipboard() error {
 
     if copiedText != content[0] {
         writer := csv.NewWriter(file)
+
+        csvContent = append(csvContent, copiedText)
+
+        
+        
         //ToDo creating the list of strings to be written file
         if err = writer.Write(csvContent); err != nil {
             return err
         }
+
+        writer.Flush()
     }
 /*
     if copiedText != content from csv {
