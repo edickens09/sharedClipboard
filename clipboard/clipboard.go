@@ -2,6 +2,7 @@
 package clipboard
 
 import (
+
 	"os"
         "io"
         "encoding/csv"
@@ -29,17 +30,18 @@ func CreateClipboard() error {
     return nil
 }
 
-func CopyToClipboard() error {
+func CopyToClipboard(filename string) error {
 
-    var csvContent []string
+    var version int64
 
-    file, err := os.Open("clipboard.dat")
+    file, err := os.Open(filename)
     if err != nil {
         return err
     }
 
     defer file.Close()
     
+    //getting the clipboard info into memory
     copiedText := commands.Paste()
     
     reader := csv.NewReader(file)
@@ -47,40 +49,43 @@ func CopyToClipboard() error {
     content, err := reader.Read()
     if err != nil {
         if err == io.EOF {
+            //should something else be in this area?
 
         } else {
             return err
         }
     }
 
+    if len(content) == 0 {
+
+        version = 0
+
+        if err = WriteToCSV(file, version, copiedText); err != nil {
+            return err
+        }
+
+        return nil
+
+    }
+
     if copiedText != content[0] {
-        writer := csv.NewWriter(file)
-        
-        newVersionInt, err := strconv.ParseInt(content[1], 10, 64)
+
+        version, err = strconv.ParseInt(content[1], 10, 64)
         if err != nil {
             return err
         }
-
-        newVersionInt += 1
-        newVersion := strconv.FormatInt(newVersionInt, 10)
-
-        csvContent = append(csvContent, copiedText)
-        csvContent = append(csvContent, newVersion)
-
-        if err = writer.Write(csvContent); err != nil {
+        
+        if err = WriteToCSV(file, version, copiedText); err != nil {
             return err
         }
-
-        writer.Flush()
     }
 
     return nil
-    
 }
 
-func CopyFromClipboard( text string) error {
+func CopyFromClipboard(text string, filename string) error {
 
-    file, err := os.Open("clipboard.dat")
+    file, err := os.Open(filename)
     if err != nil {
         return err
     }
@@ -106,5 +111,25 @@ func CopyFromClipboard( text string) error {
 
     commands.Copy(cbContent.content)
     
+    return nil
+}
+
+func WriteToCSV(file io.Writer, version int64, copiedText string) error {
+
+    var csvContent []string
+    writer := csv.NewWriter(file)
+
+    version += 1
+    newVersion := strconv.FormatInt(version, 10)
+    
+    csvContent = append(csvContent, copiedText)
+    csvContent = append(csvContent, newVersion)
+
+    if err := writer.Write(csvContent); err != nil {
+        return err
+    }
+
+    writer.Flush()
+
     return nil
 }

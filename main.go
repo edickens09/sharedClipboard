@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/edickens09/sharedClipboard/commands"
+        "github.com/edickens09/sharedClipboard/clipboard"
 //	"go.yaml.in/yaml/v4"
 )
 
@@ -17,6 +18,11 @@ func main() {
 
 	commands.Copy(copied)
 	
-	pasted := commands.Paste()
-	fmt.Printf(pasted)
+        if err := clipboard.CreateClipboard(); err != nil {
+            fmt.Println("Error creating clipboard")
+        }
+
+        if err := clipboard.CopyToClipboard(); err != nil {
+            fmt.Println("Error writing to file")
+        }
 }	
