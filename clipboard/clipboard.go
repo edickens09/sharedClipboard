@@ -55,26 +55,25 @@ func CopyToClipboard() error {
 
     if copiedText != content[0] {
         writer := csv.NewWriter(file)
+        
+        newVersionInt, err := strconv.ParseInt(content[1], 10, 64)
+        if err != nil {
+            return err
+        }
+
+        newVersionInt += 1
+        newVersion := strconv.FormatInt(newVersionInt, 10)
 
         csvContent = append(csvContent, copiedText)
+        csvContent = append(csvContent, newVersion)
 
-        
-        
-        //ToDo creating the list of strings to be written file
         if err = writer.Write(csvContent); err != nil {
             return err
         }
 
         writer.Flush()
     }
-/*
-    if copiedText != content from csv {
-        then write to file
 
-        version += 1
-    }
-    copy from system clipboard to file make sure and increment the file
-*/
     return nil
     
 }
