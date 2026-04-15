@@ -5,6 +5,7 @@ import (
 
 	"os"
         "io"
+        //"fmt"
         "encoding/csv"
         "strconv"
 
@@ -20,7 +21,7 @@ type ClipboardContent struct {
 var cbContent ClipboardContent
 
 func CreateClipboard() error {
-    file, err := os.OpenFile("clipboard.dat", os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644,)
+    file, err := os.OpenFile("clipboard.dat", os.O_CREATE, 0644,)
     if err != nil {
 
         return err
@@ -34,7 +35,7 @@ func CopyToClipboard(filename string) error {
 
     var version int64
 
-    file, err := os.Open(filename)
+    file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0644)
     if err != nil {
         return err
     }

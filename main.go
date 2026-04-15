@@ -14,15 +14,13 @@ type Config struct {
 }
 
 func main() {
-	copied := "Hard coded text\n"
+        file := "clipboard.dat"
+	copied := "Hard coded text"
 
 	commands.Copy(copied)
 	
-        if err := clipboard.CreateClipboard(); err != nil {
-            fmt.Println("Error creating clipboard")
-        }
-
-        if err := clipboard.CopyToClipboard(); err != nil {
+        if err := clipboard.CopyToClipboard(file); err != nil {
             fmt.Println("Error writing to file")
+            fmt.Println(err)
         }
 }	
