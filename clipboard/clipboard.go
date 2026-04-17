@@ -5,11 +5,12 @@ import (
 
 	"os"
         "io"
-        //"fmt"
+        "fmt"
         "encoding/csv"
         "strconv"
 
         "github.com/edickens09/sharedClipboard/commands"
+        "github.com/fsnotify/fsnotify"
 )
 
 type ClipboardContent struct {
@@ -141,5 +142,36 @@ func WriteToCSV(file *os.File, version int64, copiedText string) error {
 
     writer.Flush()
 
+    return nil
+}
+
+func WatchFile(filename string) error {
+
+    watcher, err := fsnotify.NewWatcher()
+    if err != nil {
+        return err
+    }
+
+    defer watcher.Close()
+
+    go func() {
+        for {
+            select {
+            case event, ok := <-watcher.Events:
+                if !ok {
+                    return
+                }
+                fmt.Println("event:", event)
+                if event.Has(fsnotify.Write) {
+                    fmt.Println("modified file:", event.Name)
+                }
+            case err, ok := <-watcher.Errors:
+                if !ok {
+                    return
+                }
+                fmt.Println("error:", err)
+            }
+        }
+    }()
     return nil
 }
