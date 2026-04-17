@@ -32,9 +32,9 @@ func CreateClipboard() error {
 }
 
 func CopyToClipboard(filename string) error {
-
     var version int64
-
+    
+    //find a way to open file and overwrite it each time
     file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0644)
     if err != nil {
         return err
@@ -85,7 +85,6 @@ func CopyToClipboard(filename string) error {
 }
 
 func CopyFromClipboard(text string, filename string) error {
-
     file, err := os.Open(filename)
     if err != nil {
         return err
@@ -115,9 +114,19 @@ func CopyFromClipboard(text string, filename string) error {
     return nil
 }
 
-func WriteToCSV(file io.Writer, version int64, copiedText string) error {
-
+func WriteToCSV(file *os.File, version int64, copiedText string) error {
     var csvContent []string
+
+    _, err := file.Seek(0,0)
+    if err != nil {
+        return err
+    }
+
+    err = file.Truncate(0)
+    if err != nil {
+        return err
+    }
+
     writer := csv.NewWriter(file)
 
     version += 1
@@ -126,7 +135,7 @@ func WriteToCSV(file io.Writer, version int64, copiedText string) error {
     csvContent = append(csvContent, copiedText)
     csvContent = append(csvContent, newVersion)
 
-    if err := writer.Write(csvContent); err != nil {
+    if err = writer.Write(csvContent); err != nil {
         return err
     }
 

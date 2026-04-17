@@ -5,17 +5,14 @@ import (
 
 	"github.com/edickens09/sharedClipboard/commands"
         "github.com/edickens09/sharedClipboard/clipboard"
-//	"go.yaml.in/yaml/v4"
+        "github.com/edickens09/sharedClipboard/config"
 )
-
-type Config struct {
-	server string
-        port string
-}
 
 func main() {
         file := "clipboard.dat"
 	copied := "Hard coded text"
+
+        config.ReadConfig("config.yaml")
 
 	commands.Copy(copied)
 	
